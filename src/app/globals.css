@@ -99,7 +99,8 @@ body {
 
 /* Animation keyframes */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
     opacity: 0.3;
   }
@@ -118,7 +119,8 @@ body {
 }
 
 @keyframes electronicsFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) translateX(0px) rotate(0deg);
     opacity: 0.2;
   }
