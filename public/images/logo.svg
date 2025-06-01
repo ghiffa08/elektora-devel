@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60">
+  <style>
+    .logo-text { font-family: Arial, sans-serif; font-weight: bold; }
+    .elektora { fill: #2C73D2; }
+    .team { fill: #00FFD1; }
+  </style>
+  <text x="10" y="40" class="logo-text elektora" font-size="28">ELEKTORA</text>
+  <text x="130" y="40" class="logo-text team" font-size="28">TEAM</text>
+</svg>

@@ -1,0 +1,144 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { FaCode, FaMicrochip, FaServer, FaDatabase } from 'react-icons/fa';
+import { useLanguage } from '@/context/LanguageContext';
+import { DivisionsSkeleton } from '@/components/ui/Skeleton';
+
+const Divisions = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const { t } = useLanguage();
+  
+  useEffect(() => {
+    // Simulate data loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  const divisions = [
+    {
+      titleKey: 'softwareTitle',
+      descriptionKey: 'softwareDesc',
+      icon: <FaCode className="text-4xl text-elektora-blue" />,
+      color: 'bg-blue-50 dark:bg-blue-950',
+      borderColor: 'border-elektora-blue',
+      iconBg: 'bg-blue-100 dark:bg-blue-900'
+    },
+    {
+      titleKey: 'hardwareTitle',
+      descriptionKey: 'hardwareDesc',
+      icon: <FaMicrochip className="text-4xl text-elektora-cyan" />,
+      color: 'bg-cyan-50 dark:bg-cyan-950',
+      borderColor: 'border-elektora-cyan',
+      iconBg: 'bg-cyan-100 dark:bg-cyan-900'
+    },
+    {
+      titleKey: 'cloudTitle',
+      descriptionKey: 'cloudDesc',
+      icon: <FaServer className="text-4xl text-elektora-blue" />,
+      color: 'bg-blue-50 dark:bg-blue-950',
+      borderColor: 'border-elektora-blue',
+      iconBg: 'bg-blue-100 dark:bg-blue-900'
+    },
+    {
+      titleKey: 'dataTitle',
+      descriptionKey: 'dataDesc',
+      icon: <FaDatabase className="text-4xl text-elektora-cyan" />,
+      color: 'bg-cyan-50 dark:bg-cyan-950',
+      borderColor: 'border-elektora-cyan',
+      iconBg: 'bg-cyan-100 dark:bg-cyan-900'
+    }
+  ];
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+  };
+  
+  return (
+    <section id="divisions" className="py-20">
+      <div className="container-section">
+        {isLoading ? (
+          <DivisionsSkeleton />
+        ) : (
+          <>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="section-title"
+            >
+              {t('divisionsTitle')}
+            </motion.h2>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="section-subtitle"
+            >
+              {t('divisionsSubtitle')}
+            </motion.div>
+            
+            <motion.div
+              variants={container}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
+            >
+              {divisions.map((division, index) => (
+                <motion.div
+                  key={index}
+                  variants={item}
+                  className={`${division.color} rounded-lg p-6 border-l-4 ${division.borderColor} shadow-md transition-transform hover:scale-105 hover:shadow-lg`}
+                >
+                  <div className={`w-16 h-16 ${division.iconBg} rounded-full flex items-center justify-center mb-4`}>
+                    {division.icon}
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{t(division.titleKey)}</h3>
+                  <p className="text-gray-600 dark:text-gray-400">{t(division.descriptionKey)}</p>
+                  <div className="mt-4 flex justify-end">
+                    <span className="text-sm text-elektora-blue font-medium hover:text-elektora-cyan transition-colors cursor-pointer">
+                      {t('learnMoreLink')}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="mt-16 text-center"
+            >
+              <p className="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                {t('divisionsFooter')}
+              </p>
+            </motion.div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default Divisions;
