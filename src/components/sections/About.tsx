@@ -115,10 +115,9 @@ const About = () => {
                   24/7 Community Support
                 </div>
               </div>
-              
-              <p className="max-w-3xl mx-auto text-white/80 leading-relaxed">
+                <p className="max-w-3xl mx-auto text-white/80 leading-relaxed">
                 Join a thriving community of like-minded individuals who are passionate about technology and 
-                eager to collaborate on projects that make a difference. Whether you're a beginner or an expert, 
+                eager to collaborate on projects that make a difference. Whether you&apos;re a beginner or an expert, 
                 Elektora Team provides the perfect environment to grow and excel.
               </p>
             </motion.div>

@@ -4,21 +4,9 @@ import Link from 'next/link';
 import { FaDiscord, FaTwitter, FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-import { useState, useEffect } from 'react';
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
   const { t } = useLanguage();
-  const [isLoading, setIsLoading] = useState(true);
-  
-  useEffect(() => {
-    // Simulate loading delay
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, []);
     return (
     <footer className="relative pt-16 pb-8">
       {/* Glass background overlay */}

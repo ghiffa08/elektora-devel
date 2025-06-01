@@ -11,7 +11,6 @@ import { useLanguage } from '@/context/LanguageContext';
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -25,16 +24,10 @@ const Header = () => {
 
     window.addEventListener('scroll', handleScroll);
     
-    // Simulate loading delay
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => {
+        return () => {
       window.removeEventListener('scroll', handleScroll);
-      clearTimeout(timer);
     };
-  }, []);  const navLinks = [
+  }, []);const navLinks = [
     { name: 'home', href: '#hero' },
     { name: 'about', href: '#about' },
     { name: 'divisions', href: '#divisions' },

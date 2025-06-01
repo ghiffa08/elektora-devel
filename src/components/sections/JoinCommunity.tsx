@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { FaDiscord, FaUserPlus, FaGithub } from 'react-icons/fa';
-import Link from 'next/link';
 
 const JoinCommunity = () => {
   return (
