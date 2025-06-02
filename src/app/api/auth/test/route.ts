@@ -1,12 +1,23 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../[...nextauth]/route"
 
-export async function GET(request: NextRequest) {
+interface UserSession {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string;
+}
+
+interface SessionWithUser {
+  user: UserSession;
+}
+
+export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions as any) as SessionWithUser | null
     
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json(
         { authenticated: false, message: "Not authenticated" },
         { status: 401 }
@@ -19,7 +30,7 @@ export async function GET(request: NextRequest) {
         id: session.user.id,
         name: session.user.name,
         email: session.user.email,
-        role: (session.user as any).role,
+        role: session.user.role,
       },
       message: "Authentication successful"
     })

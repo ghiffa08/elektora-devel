@@ -36,6 +36,7 @@ export interface ArticleFilters {
   search?: string;
   limit?: number;
   offset?: number;
+  page?: number;
 }
 
 export interface PaginatedArticles {
