@@ -71,7 +71,43 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Footer
     "copyright": "© 2025 Elektora Team. All rights reserved.",
-    "footerDescription": "Empowering the next generation of tech innovators through collaborative learning and community-driven projects."
+    "footerDescription": "Empowering the next generation of tech innovators through collaborative learning and community-driven projects.",
+    
+    // Article Creation
+    "createArticle": "Create New Article",
+    "shareKnowledge": "Share your knowledge with the community",
+    "editMode": "Edit",
+    "previewMode": "Preview",
+    "cancel": "Cancel",
+    "title": "Title",
+    "titleRequired": "Title is required",
+    "urlSlug": "URL Slug",
+    "featuredImage": "Featured Image",
+    "uploadImage": "Upload Image",
+    "excerpt": "Excerpt",
+    "excerptPlaceholder": "Brief description of your article...",
+    "content": "Content",
+    "contentRequired": "Content is required",
+    "contentMinLength": "Content must be at least 100 characters",
+    "contentPlaceholder": "Write your article content here... You can use markdown formatting.",
+    "charactersCount": "Characters: {count} (minimum 100)",
+    "category": "Category",
+    "tags": "Tags",
+    "tagsPlaceholder": "react, javascript, tutorial",
+    "separateTagsComma": "Separate tags with commas",
+    "author": "Author",
+    "authorPlaceholder": "Your name",
+    "publishImmediately": "Publish immediately",
+    "saveAsDraft": "Save as Draft",
+    "publishArticle": "Publish Article",
+    "articlePreview": "Article Preview",
+    "authRequired": "Authentication Required",
+    "needLoginCreate": "You need to be logged in to create articles.",    "signIn": "Sign In",
+    "articleCreatedSuccess": "Article Created Successfully!",
+    "redirectingArticle": "Redirecting to your article...",
+    "networkError": "Network error. Please try again.",
+    "failedCreateArticle": "Failed to create article",
+    "failedUpdateArticle": "Failed to update article"
   },
   id: {    // Header
     "home": "Beranda",
@@ -133,7 +169,43 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Footer
     "copyright": "© 2025 Elektora Team. Hak Cipta Dilindungi.",
-    "footerDescription": "Memberdayakan generasi berikutnya inovator teknologi melalui pembelajaran kolaboratif dan proyek yang didorong komunitas."
+    "footerDescription": "Memberdayakan generasi berikutnya inovator teknologi melalui pembelajaran kolaboratif dan proyek yang didorong komunitas.",
+    
+    // Article Creation
+    "createArticle": "Buat Artikel Baru",
+    "shareKnowledge": "Bagikan pengetahuan Anda dengan komunitas",
+    "editMode": "Edit",
+    "previewMode": "Pratinjau",
+    "cancel": "Batal",
+    "title": "Judul",
+    "titleRequired": "Judul wajib diisi",
+    "urlSlug": "URL Slug",
+    "featuredImage": "Gambar Unggulan",
+    "uploadImage": "Upload Gambar",
+    "excerpt": "Ringkasan",
+    "excerptPlaceholder": "Deskripsi singkat artikel Anda...",
+    "content": "Konten",
+    "contentRequired": "Konten wajib diisi",
+    "contentMinLength": "Konten minimal 100 karakter",
+    "contentPlaceholder": "Tulis konten artikel Anda di sini... Anda dapat menggunakan format markdown.",
+    "charactersCount": "Karakter: {count} (minimal 100)",
+    "category": "Kategori",
+    "tags": "Tag",
+    "tagsPlaceholder": "react, javascript, tutorial",
+    "separateTagsComma": "Pisahkan tag dengan koma",
+    "author": "Penulis",
+    "authorPlaceholder": "Nama Anda",
+    "publishImmediately": "Terbitkan segera",
+    "saveAsDraft": "Simpan sebagai Draft",
+    "publishArticle": "Terbitkan Artikel",
+    "articlePreview": "Pratinjau Artikel",
+    "authRequired": "Autentikasi Diperlukan",
+    "needLoginCreate": "Anda perlu login untuk membuat artikel.",
+    "signIn": "Masuk",
+    "articleCreatedSuccess": "Artikel Berhasil Dibuat!",    "redirectingArticle": "Mengalihkan ke artikel Anda...",
+    "networkError": "Kesalahan jaringan. Silakan coba lagi.",
+    "failedCreateArticle": "Gagal membuat artikel",
+    "failedUpdateArticle": "Gagal memperbarui artikel"
   }
 };
 

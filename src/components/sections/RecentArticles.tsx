@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Article } from '@/types/article';
 import { FaCalendarAlt, FaUser, FaArrowRight } from 'react-icons/fa';
 
@@ -131,11 +132,12 @@ const RecentArticles = () => {
               className="glass-card overflow-hidden hover:scale-105 transition-transform duration-300 group"
             >
               {/* Featured Image */}
-              <div className="h-48 bg-gradient-to-br from-elektora-blue/30 to-elektora-cyan/30 relative overflow-hidden">
-                {article.featured_image ? (
-                  <img
+              <div className="h-48 bg-gradient-to-br from-elektora-blue/30 to-elektora-cyan/30 relative overflow-hidden">                {article.featured_image ? (
+                  <Image
                     src={article.featured_image}
                     alt={article.title}
+                    width={400}
+                    height={192}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 ) : (

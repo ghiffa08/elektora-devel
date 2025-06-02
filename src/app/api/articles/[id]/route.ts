@@ -10,9 +10,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(params.id);
+    const id = params.id;
     
-    if (isNaN(id)) {
+    if (!id) {
       return NextResponse.json(
         { 
           success: false, 
@@ -56,9 +56,9 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(params.id);
+    const id = params.id;
     
-    if (isNaN(id)) {
+    if (!id) {
       return NextResponse.json(
         { 
           success: false, 
@@ -124,9 +124,9 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(params.id);
+    const id = params.id;
     
-    if (isNaN(id)) {
+    if (!id) {
       return NextResponse.json(
         { 
           success: false, 

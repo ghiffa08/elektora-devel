@@ -11,11 +11,18 @@ import AuthButton from '@/components/auth/AuthButton';
 import { useLanguage } from '@/context/LanguageContext';
 import { useSession } from 'next-auth/react';
 
+interface UserWithRole {
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role?: string;
+}
+
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { t } = useLanguage();
-  const { data: session, status } = useSession();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);  const { t } = useLanguage();
+  const { data: session } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,11 +62,11 @@ const Header = () => {
   // Combine navigation based on auth status
   const getNavigationLinks = () => {
     let links = [...coreNavLinks];
-    
-    if (session) {
+      if (session) {
+      const user = session.user as UserWithRole;
       links = [...links, ...authNavLinks];
       
-      if ((session.user as any)?.role === 'ADMIN') {
+      if (user?.role === 'ADMIN') {
         links = [...links, ...adminNavLinks];
       }
     }
@@ -164,9 +171,8 @@ const Header = () => {
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white text-sm">
                         {session.user?.name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {(session.user as any)?.role || 'USER'}
+                      </p>                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {(session.user as UserWithRole)?.role || 'USER'}
                       </p>
                     </div>
                   </div>

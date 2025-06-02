@@ -3,9 +3,21 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
 
+interface UserSession {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string;
+}
+
+interface SessionWithUser {
+  user: UserSession;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const session = await getServerSession(authOptions as any) as SessionWithUser | null
     
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -84,7 +96,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const session = await getServerSession(authOptions as any) as SessionWithUser | null
     
     if (!session?.user?.email) {
       return NextResponse.json(

@@ -19,13 +19,22 @@ export interface AuthError {
   url?: string
 }
 
+export interface UserWithRole extends User {
+  role: "USER" | "ADMIN"
+}
+
 // NextAuth.js module augmentation
 declare module "next-auth" {
   interface Session {
     user: AuthUser
+  }  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface User extends AuthUser {
+    /** 
+     * NextAuth User interface extending AuthUser
+     * This interface inherits all properties from AuthUser
+     * and is used by NextAuth for user session management
+     */
   }
-
-  interface User extends AuthUser {}
 }
 
 declare module "next-auth/jwt" {

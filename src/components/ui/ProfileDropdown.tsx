@@ -4,8 +4,16 @@ import { useState, useRef, useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaUser, FaCog, FaSignOutAlt, FaChevronDown, FaCrown } from 'react-icons/fa';
+import { FaUser, FaCog, FaSignOutAlt, FaChevronDown, FaCrown, FaNewspaper, FaPlus } from 'react-icons/fa';
 import { useLanguage } from '@/context/LanguageContext';
+
+interface UserWithRole {
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role?: string;
+}
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,8 +37,7 @@ const ProfileDropdown = () => {
   if (!session?.user) {
     return null;
   }
-
-  const user = session.user as any;
+  const user = session.user as UserWithRole;
   const isAdmin = user.role === 'ADMIN';
 
   return (
@@ -117,15 +124,34 @@ const ProfileDropdown = () => {
               {t('profile')}
             </Link>
 
+            <Link
+              href="/articles/create"
+              className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              <FaPlus className="mr-3 text-green-500" />
+              Create Article
+            </Link>
+
             {isAdmin && (
-              <Link
-                href="/admin"
-                className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                <FaCrown className="mr-3 text-yellow-500" />
-                {t('admin')}
-              </Link>
+              <>
+                <Link
+                  href="/admin"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FaCrown className="mr-3 text-yellow-500" />
+                  {t('admin')}
+                </Link>
+                  <Link
+                  href="/articles/manage"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FaNewspaper className="mr-3 text-blue-500" />
+                  Manage Articles
+                </Link>
+              </>
             )}
 
             <Link

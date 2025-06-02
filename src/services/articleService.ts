@@ -1,290 +1,302 @@
-import { getDatabase } from '@/lib/database';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { prisma } from '@/lib/prisma';
 import { Article, ArticleCreateData, ArticleUpdateData, ArticleFilters, PaginatedArticles } from '@/types/article';
 
 export class ArticleService {
-  private getDb() {
-    return getDatabase();
+  // Helper method to transform Prisma article to Article interface
+  private transformArticle(article: any): Article {
+    return {
+      id: article.id,
+      title: article.title,
+      slug: this.generateSlug(article.title),
+      excerpt: article.excerpt ?? undefined,
+      content: article.content,
+      featured_image: article.imageUrl ?? undefined,
+      author: article.author.name || 'Unknown',
+      category: article.category,
+      tags: article.tags,
+      published: article.published,
+      created_at: article.createdAt.toISOString(),
+      updated_at: article.updatedAt.toISOString()
+    };
   }
 
   // Create article
   async createArticle(data: ArticleCreateData): Promise<Article> {
-    return new Promise((resolve, reject) => {
-      const sql = `
-        INSERT INTO articles (title, slug, excerpt, content, featured_image, author, category, tags, published)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
-      
-      const params = [
-        data.title,
-        data.slug,
-        data.excerpt || null,
-        data.content,
-        data.featured_image || null,
-        data.author,
-        data.category,
-        data.tags || null,
-        data.published || 0
-      ];
-      
-      this.getDb().run(sql, params, function(err: any) {
-        if (err) {
-          reject(err);
-        } else {
-          // Get the created article
-          const selectSql = 'SELECT * FROM articles WHERE id = ?';
-          const db = getDatabase();
-          db.get(selectSql, [this.lastID], (err: any, row: any) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(row as Article);
-            }
-          });
+    try {
+      const article = await prisma.article.create({
+        data: {
+          title: data.title,
+          content: data.content,
+          excerpt: data.excerpt,
+          category: data.category,
+          tags: data.tags || '[]',
+          featured: data.published || false,
+          published: data.published || false,
+          authorId: data.author, // Assuming author is the user ID
+        },
+        include: {
+          author: true
         }
       });
-    });
+
+      return this.transformArticle(article);
+    } catch (error) {
+      console.error('Error creating article:', error);
+      throw new Error('Failed to create article');
+    }
   }
 
   // Get articles with pagination and filters
   async getArticles(filters: ArticleFilters): Promise<PaginatedArticles> {
-    return new Promise((resolve, reject) => {
-      // Build WHERE clause
-      const whereConditions: string[] = [];
-      const params: any[] = [];
-
-      if (filters.published !== undefined) {
-        whereConditions.push('published = ?');
-        params.push(filters.published ? 1 : 0);
-      }
-
-      if (filters.category) {
-        whereConditions.push('category = ?');
-        params.push(filters.category);
-      }
-
-      if (filters.author) {
-        whereConditions.push('author = ?');
-        params.push(filters.author);
-      }
-
-      if (filters.search) {
-        whereConditions.push('(title LIKE ? OR content LIKE ? OR excerpt LIKE ?)');
-        const searchTerm = `%${filters.search}%`;
-        params.push(searchTerm, searchTerm, searchTerm);
-      }
-
-      const whereClause = whereConditions.length > 0 
-        ? `WHERE ${whereConditions.join(' AND ')}`
-        : '';
-
-      // Get total count first
-      const countSql = `SELECT COUNT(*) as total FROM articles ${whereClause}`;
+    try {
+      // Build where conditions
+      const where: any = {};
       
-      this.getDb().get(countSql, params, (err: any, countResult: any) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+      if (filters.published !== undefined) {
+        where.published = filters.published;
+      }
+      
+      if (filters.category) {
+        where.category = filters.category;
+      }
+      
+      if (filters.author) {
+        where.author = {
+          name: filters.author
+        };
+      }
+      
+      if (filters.search) {
+        where.OR = [
+          { title: { contains: filters.search } },
+          { content: { contains: filters.search } },
+          { excerpt: { contains: filters.search } }
+        ];
+      }
 
-        const total = countResult.total;
-        const page = filters.page || 1;
-        const limit = filters.limit || 10;
-        const offset = (page - 1) * limit;
+      // Get total count
+      const total = await prisma.article.count({ where });
 
-        // Get articles
-        const sql = `
-          SELECT * FROM articles 
-          ${whereClause}
-          ORDER BY created_at DESC
-          LIMIT ? OFFSET ?
-        `;
-        
-        this.getDb().all(sql, [...params, limit, offset], (err: any, rows: any[]) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve({
-              articles: rows as Article[],
-              total,
-              page,
-              limit,
-              totalPages: Math.ceil(total / limit)
-            });
-          }
-        });
+      // Calculate pagination
+      const page = filters.page || 1;
+      const limit = filters.limit || 10;
+      const offset = (page - 1) * limit;
+
+      // Get articles
+      const articles = await prisma.article.findMany({
+        where,
+        include: {
+          author: true
+        },
+        orderBy: filters.sort ? { [filters.sort]: filters.order || 'desc' } : { createdAt: 'desc' },
+        skip: offset,
+        take: limit
       });
-    });
+
+      // Transform results
+      const transformedArticles: Article[] = articles.map(article => this.transformArticle(article));
+
+      return {
+        articles: transformedArticles,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasNext: page < Math.ceil(total / limit),
+          hasPrev: page > 1
+        }
+      };
+    } catch (error) {
+      console.error('Error getting articles:', error);
+      throw new Error('Failed to get articles');
+    }
   }
 
   // Get article by ID
-  async getArticleById(id: number): Promise<Article | null> {
-    return new Promise((resolve, reject) => {
-      const sql = 'SELECT * FROM articles WHERE id = ?';
-      this.getDb().get(sql, [id], (err: any, row: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row ? (row as Article) : null);
+  async getArticleById(id: string): Promise<Article | null> {
+    try {
+      const article = await prisma.article.findUnique({
+        where: { id },
+        include: {
+          author: true
         }
       });
-    });
+
+      if (!article) {
+        return null;
+      }
+
+      return this.transformArticle(article);
+    } catch (error) {
+      console.error('Error getting article by ID:', error);
+      throw new Error('Failed to get article');
+    }
   }
 
   // Get article by slug
   async getArticleBySlug(slug: string): Promise<Article | null> {
-    return new Promise((resolve, reject) => {
-      const sql = 'SELECT * FROM articles WHERE slug = ?';
-      this.getDb().get(sql, [slug], (err: any, row: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row ? (row as Article) : null);
+    try {
+      // Since we don't have slug in the schema, we'll search by title
+      // You might want to add slug field to the schema later
+      const articles = await prisma.article.findMany({
+        include: {
+          author: true
         }
       });
-    });
+
+      const article = articles.find(a => this.generateSlug(a.title) === slug);
+
+      if (!article) {
+        return null;
+      }
+
+      return this.transformArticle(article);
+    } catch (error) {
+      console.error('Error getting article by slug:', error);
+      throw new Error('Failed to get article');
+    }
   }
 
   // Update article
-  async updateArticle(id: number, data: ArticleUpdateData): Promise<Article | null> {
-    return new Promise((resolve, reject) => {
-      const updateFields: string[] = [];
-      const params: any[] = [];
+  async updateArticle(id: string, data: ArticleUpdateData): Promise<Article> {
+    try {
+      const updateData: any = {};
 
-      // Build SET clause dynamically based on provided fields
-      if (data.title !== undefined) {
-        updateFields.push('title = ?');
-        params.push(data.title);
-      }
-      if (data.slug !== undefined) {
-        updateFields.push('slug = ?');
-        params.push(data.slug);
-      }
-      if (data.excerpt !== undefined) {
-        updateFields.push('excerpt = ?');
-        params.push(data.excerpt);
-      }
-      if (data.content !== undefined) {
-        updateFields.push('content = ?');
-        params.push(data.content);
-      }
-      if (data.featured_image !== undefined) {
-        updateFields.push('featured_image = ?');
-        params.push(data.featured_image);
-      }
-      if (data.author !== undefined) {
-        updateFields.push('author = ?');
-        params.push(data.author);
-      }
-      if (data.category !== undefined) {
-        updateFields.push('category = ?');
-        params.push(data.category);
-      }
-      if (data.tags !== undefined) {
-        updateFields.push('tags = ?');
-        params.push(data.tags);
-      }
-      if (data.published !== undefined) {
-        updateFields.push('published = ?');
-        params.push(data.published ? 1 : 0);
-      }
+      if (data.title !== undefined) updateData.title = data.title;
+      if (data.content !== undefined) updateData.content = data.content;
+      if (data.excerpt !== undefined) updateData.excerpt = data.excerpt;
+      if (data.category !== undefined) updateData.category = data.category;
+      if (data.tags !== undefined) updateData.tags = data.tags;
+      if (data.featured_image !== undefined) updateData.imageUrl = data.featured_image;
+      if (data.published !== undefined) updateData.published = data.published;
 
-      updateFields.push('updated_at = CURRENT_TIMESTAMP');
-      params.push(id);
-
-      const sql = `UPDATE articles SET ${updateFields.join(', ')} WHERE id = ?`;
-      
-      this.getDb().run(sql, params, function(err: any) {
-        if (err) {
-          reject(err);
-        } else {
-          // Get the updated article
-          const selectSql = 'SELECT * FROM articles WHERE id = ?';
-          const db = getDatabase();
-          db.get(selectSql, [id], (err: any, row: any) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(row ? (row as Article) : null);
-            }
-          });
+      const article = await prisma.article.update({
+        where: { id },
+        data: updateData,
+        include: {
+          author: true
         }
       });
-    });
+
+      return this.transformArticle(article);
+    } catch (error) {
+      console.error('Error updating article:', error);
+      throw new Error('Failed to update article');
+    }
   }
 
   // Delete article
-  async deleteArticle(id: number): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      const sql = 'DELETE FROM articles WHERE id = ?';
-      this.getDb().run(sql, [id], function(err: any) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(this.changes > 0);
-        }
+  async deleteArticle(id: string): Promise<boolean> {
+    try {
+      await prisma.article.delete({
+        where: { id }
       });
-    });
+      return true;
+    } catch (error) {
+      console.error('Error deleting article:', error);
+      return false;
+    }
   }
 
-  // Get all categories
+  // Get categories
   async getCategories(): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      const sql = 'SELECT DISTINCT category FROM articles WHERE category IS NOT NULL ORDER BY category';
-      this.getDb().all(sql, [], (err: any, rows: any[]) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows.map(row => row.category));
-        }
+    try {
+      const articles = await prisma.article.findMany({
+        select: {
+          category: true
+        },
+        distinct: ['category']
       });
-    });
+
+      return articles
+        .map(article => article.category)
+        .filter(category => category)
+        .sort();
+    } catch (error) {
+      console.error('Error getting categories:', error);
+      throw new Error('Failed to get categories');
+    }
   }
 
-  // Get all authors
+  // Get authors
   async getAuthors(): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      const sql = 'SELECT DISTINCT author FROM articles WHERE author IS NOT NULL ORDER BY author';
-      this.getDb().all(sql, [], (err: any, rows: any[]) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows.map(row => row.author));
+    try {
+      const authors = await prisma.user.findMany({
+        select: {
+          name: true
+        },
+        where: {
+          articles: {
+            some: {}
+          }
         }
       });
-    });
+
+      return authors
+        .map(author => author.name)
+        .filter((name): name is string => name !== null)
+        .sort();
+    } catch (error) {
+      console.error('Error getting authors:', error);
+      throw new Error('Failed to get authors');
+    }
   }
 
   // Get recent articles
   async getRecentArticles(limit: number = 5): Promise<Article[]> {
-    return new Promise((resolve, reject) => {
-      const sql = 'SELECT * FROM articles WHERE published = 1 ORDER BY created_at DESC LIMIT ?';
-      this.getDb().all(sql, [limit], (err: any, rows: any[]) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows as Article[]);
-        }
+    try {
+      const articles = await prisma.article.findMany({
+        where: {
+          published: true
+        },
+        include: {
+          author: true
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: limit
       });
-    });
+
+      return articles.map(article => this.transformArticle(article));
+    } catch (error) {
+      console.error('Error getting recent articles:', error);
+      throw new Error('Failed to get recent articles');
+    }
   }
 
-  // Search articles
-  async searchArticles(query: string, limit: number = 10): Promise<Article[]> {
-    return new Promise((resolve, reject) => {
-      const sql = `
-        SELECT * FROM articles 
-        WHERE published = 1 AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)
-        ORDER BY created_at DESC 
-        LIMIT ?
-      `;
-      const searchTerm = `%${query}%`;
-      this.getDb().all(sql, [searchTerm, searchTerm, searchTerm, limit], (err: any, rows: any[]) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows as Article[]);
+  // Get featured articles
+  async getFeaturedArticles(): Promise<Article[]> {
+    try {
+      const articles = await prisma.article.findMany({
+        where: {
+          featured: true,
+          published: true
+        },
+        include: {
+          author: true
+        },
+        orderBy: {
+          createdAt: 'desc'
         }
       });
-    });
+
+      return articles.map(article => this.transformArticle(article));
+    } catch (error) {
+      console.error('Error getting featured articles:', error);
+      throw new Error('Failed to get featured articles');
+    }
+  }
+
+  // Helper method to generate slug from title
+  private generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '');
   }
 }

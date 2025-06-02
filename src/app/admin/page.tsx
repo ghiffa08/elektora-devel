@@ -2,6 +2,7 @@
 
 import { useRequireAdmin } from "@/hooks/useAuth"
 import { FaCrown, FaUsers, FaNewspaper, FaCog, FaChartLine } from "react-icons/fa"
+import Link from "next/link"
 
 export default function AdminDashboard() {
   const { user, isLoading } = useRequireAdmin()
@@ -83,10 +84,9 @@ export default function AdminDashboard() {
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Create, edit, and manage articles
-            </p>
-            <button className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors">
+            </p>            <Link href="/articles/manage" className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors inline-block text-center">
               Manage Articles
-            </button>
+            </Link>
           </div>
 
           {/* System Settings */}

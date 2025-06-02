@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getArticles } from '@/services/articleService';
+import { ArticleService } from '@/services/articleService';
 import ArticlesPageClient from '@/components/articles/ArticlesPageClient';
 import { Article } from '@/types/article';
 
@@ -14,11 +14,16 @@ function ArticlesLoading() {
 
 export default async function ArticlesPage() {
   // Fetch initial data server-side
-  const initialArticles: Article[] = await getArticles();
+  const articleService = new ArticleService();
+  const initialData = await articleService.getArticles({ 
+    published: true,
+    page: 1,
+    limit: 12
+  });
 
   return (
     <Suspense fallback={<ArticlesLoading />}>
-      <ArticlesPageClient initialArticles={initialArticles} />
+      <ArticlesPageClient initialArticles={initialData} />
     </Suspense>
   );
 }

@@ -109,10 +109,9 @@ export default function ProfilePage() {
                         <span>Admin</span>
                       </div>
                     )}
-                  </div>
-                  <p className="text-blue-100">
-                    {(user as any)?.role || "USER"} Member
-                  </p>                  <p className="text-blue-200 text-sm">
+                  </div>                  <p className="text-blue-100">
+                    {user?.role || "USER"} Member
+                  </p><p className="text-blue-200 text-sm">
                     Member since {new Date().toLocaleDateString()}
                   </p>
                 </div>
@@ -213,9 +212,8 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Account Role</p>
-                        <div className="flex items-center space-x-2">
-                          <p className="font-medium text-gray-900 dark:text-white">
-                            {(user as any)?.role || "USER"}
+                        <div className="flex items-center space-x-2">                          <p className="font-medium text-gray-900 dark:text-white">
+                            {user?.role || "USER"}
                           </p>
                           {isAdmin && (
                             <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">

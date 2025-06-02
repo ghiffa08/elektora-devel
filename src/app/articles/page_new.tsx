@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
 import ArticlesPageClient from '@/components/articles/ArticlesPageClient';
 import { ArticleService } from '@/services/articleService';
-import { Article } from '@/types/article';
+import { PaginatedArticles } from '@/types/article';
 
 // Server component for SSR
-async function getInitialArticles(): Promise<Article[]> {
+async function getInitialArticles(): Promise<PaginatedArticles> {
   try {
     const articleService = new ArticleService();
     const result = await articleService.getArticles({
@@ -12,10 +12,20 @@ async function getInitialArticles(): Promise<Article[]> {
       limit: 12,
       page: 1
     });
-    return result.articles || [];
+    return result;
   } catch (error) {
     console.error('Error fetching initial articles:', error);
-    return [];
+    return {
+      articles: [],
+      pagination: {
+        page: 1,
+        limit: 12,
+        total: 0,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false
+      }
+    };
   }
 }
 

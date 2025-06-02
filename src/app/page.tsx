@@ -14,7 +14,7 @@ import Footer from '@/components/layout/Footer';
 import { useDatabaseInit } from '@/hooks/useDatabaseInit';
 
 export default function Home() {
-  const { initialized, loading, error } = useDatabaseInit();
+  const { error } = useDatabaseInit();
 
   useEffect(() => {
     if (error) {

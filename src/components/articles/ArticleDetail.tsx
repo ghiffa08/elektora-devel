@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Article } from '@/types/article';
 import { FaCalendarAlt, FaUser, FaTag, FaArrowLeft, FaShare } from 'react-icons/fa';
 
@@ -15,9 +16,9 @@ const ArticleDetail = ({ slug }: ArticleDetailProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
-
   useEffect(() => {
     fetchArticle();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   const fetchArticle = async () => {
@@ -45,7 +46,7 @@ const ArticleDetail = ({ slug }: ArticleDetailProps) => {
     }
   };
 
-  const fetchRelatedArticles = async (category: string, currentId: number) => {
+  const fetchRelatedArticles = async (category: string, currentId: string) => {
     try {
       const response = await fetch(`/api/articles?category=${category}&limit=3&published=true`);
       const data = await response.json();
@@ -200,10 +201,11 @@ const ArticleDetail = ({ slug }: ArticleDetailProps) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-8"
-          >
-            <img
+          >            <Image
               src={article.featured_image}
               alt={article.title}
+              width={800}
+              height={384}
               className="w-full h-96 object-cover rounded-lg shadow-lg"
             />
           </motion.div>
@@ -258,11 +260,12 @@ const ArticleDetail = ({ slug }: ArticleDetailProps) => {
                   transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
                   className="glass-card overflow-hidden hover:scale-105 transition-transform duration-300"
                 >
-                  <div className="h-32 bg-gradient-to-br from-elektora-blue/30 to-elektora-cyan/30 relative">
-                    {relatedArticle.featured_image ? (
-                      <img
+                  <div className="h-32 bg-gradient-to-br from-elektora-blue/30 to-elektora-cyan/30 relative">                    {relatedArticle.featured_image ? (
+                      <Image
                         src={relatedArticle.featured_image}
                         alt={relatedArticle.title}
+                        width={300}
+                        height={128}
                         className="w-full h-full object-cover"
                       />
                     ) : (

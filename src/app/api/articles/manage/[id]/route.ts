@@ -3,12 +3,24 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
 
+interface UserSession {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string;
+}
+
+interface SessionWithUser {
+  user: UserSession;
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const session = await getServerSession(authOptions as any) as SessionWithUser | null
     
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -42,28 +54,18 @@ export async function PUT(
       return NextResponse.json(
         { error: 'Article not found' },
         { status: 404 }
-      )
-    }
+      )    }
 
-    // Generate new slug if title changed
-    let slug = existingArticle.slug
+    // Check if title already exists (if title is being changed)
     if (title && title !== existingArticle.title) {
-      slug = title
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim('-')
-
-      // Check if new slug already exists
-      const slugExists = await prisma.article.findFirst({
+      const titleExists = await prisma.article.findFirst({
         where: { 
-          slug,
+          title,
           id: { not: id }
         }
       })
 
-      if (slugExists) {
+      if (titleExists) {
         return NextResponse.json(
           { error: 'Article with this title already exists' },
           { status: 409 }
@@ -75,7 +77,7 @@ export async function PUT(
     const updatedArticle = await prisma.article.update({
       where: { id },
       data: {
-        ...(title && { title, slug }),
+        ...(title && { title }),
         ...(content && { content }),
         ...(excerpt && { excerpt }),
         ...(category && { category }),
@@ -105,7 +107,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const session = await getServerSession(authOptions as any) as SessionWithUser | null
     
     if (!session?.user?.email) {
       return NextResponse.json(

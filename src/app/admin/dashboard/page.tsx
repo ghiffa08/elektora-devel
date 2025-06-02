@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { FaPlus, FaEdit, FaTrash, FaUsers, FaNewspaper, FaEye } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+import type { UserWithRole } from '@/types/auth';
 
 interface User {
   id: string;
@@ -173,8 +174,8 @@ const AdminDashboard = () => {
       </div>
     );
   }
-
-  if (!session?.user || (session.user as any).role !== 'ADMIN') {
+  const userWithRole = session?.user as UserWithRole;
+  if (!session?.user || userWithRole.role !== 'ADMIN') {
     return (
       <div className="min-h-screen pt-20 flex items-center justify-center">
         <div className="text-center">

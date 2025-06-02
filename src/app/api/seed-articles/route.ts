@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { ArticleService } from '@/services/articleService';
 import { ArticleCreateData } from '@/types/article';
 
@@ -338,14 +338,13 @@ type ButtonEvent = \`button_\${string}_clicked\`;
 export async function DELETE() {
   try {
     const articles = await articleService.getArticles({ published: undefined });
-    
-    for (const article of articles.data) {
+      for (const article of articles.articles) {
       await articleService.deleteArticle(article.id);
     }
 
     return NextResponse.json({
       success: true,
-      message: `Successfully deleted ${articles.data.length} articles`,
+      message: `Successfully deleted ${articles.articles.length} articles`,
     });
   } catch (error) {
     console.error('Error deleting articles:', error);

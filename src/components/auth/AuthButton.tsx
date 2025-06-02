@@ -4,6 +4,14 @@ import { useSession, signIn, signOut } from "next-auth/react"
 import { FaUser, FaSignOutAlt, FaSignInAlt, FaCrown } from "react-icons/fa"
 import Image from "next/image"
 
+interface UserWithRole {
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role?: string;
+}
+
 export default function AuthButton() {
   const { data: session, status } = useSession()
 
@@ -14,8 +22,8 @@ export default function AuthButton() {
       </div>
     )
   }
-
   if (session) {
+    const user = session.user as UserWithRole
     return (
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
@@ -38,9 +46,9 @@ export default function AuthButton() {
             </p>
             <div className="flex items-center space-x-1">
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {(session.user as any)?.role}
+                {user?.role}
               </p>
-              {(session.user as any)?.role === "ADMIN" && (
+              {user?.role === "ADMIN" && (
                 <FaCrown className="text-yellow-500 text-xs" />
               )}
             </div>

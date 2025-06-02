@@ -3,10 +3,10 @@
 import { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import ArticleList from '@/components/articles/ArticleList';
-import { Article } from '@/types/article';
+import { PaginatedArticles } from '@/types/article';
 
 interface ArticlesPageProps {
-  initialArticles: Article[];
+  initialArticles: PaginatedArticles;
 }
 
 // Loading component
@@ -51,7 +51,7 @@ const ArticlesPageClient = ({ initialArticles }: ArticlesPageProps) => {
             className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
           >
             {[
-              { number: `${initialArticles.length}+`, label: "Articles Published" },
+              { number: `${initialArticles.articles.length}+`, label: "Articles Published" },
               { number: "50+", label: "Contributors" },
               { number: "10K+", label: "Readers Monthly" }
             ].map((stat, index) => (

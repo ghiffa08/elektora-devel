@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Article, PaginatedArticles } from '@/types/article';
-import { FaCalendarAlt, FaUser, FaTag, FaEye } from 'react-icons/fa';
+import { FaCalendarAlt, FaUser, FaEye } from 'react-icons/fa';
 
 interface ArticleListProps {
   initialArticles?: PaginatedArticles;
@@ -58,17 +59,18 @@ const ArticleList = ({ initialArticles, category, limit = 10 }: ArticleListProps
       console.error('Error fetching categories:', error);
     }
   };
-
   useEffect(() => {
     if (!initialArticles) {
       fetchArticles(currentPage, searchTerm, selectedCategory);
     }
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (initialArticles) return;
     fetchArticles(currentPage, searchTerm, selectedCategory);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, searchTerm, selectedCategory]);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -154,7 +156,7 @@ const ArticleList = ({ initialArticles, category, limit = 10 }: ArticleListProps
             transition={{ duration: 0.6 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {articles.data.map((article: Article, index: number) => (
+            {articles.articles.map((article: Article, index: number) => (
               <motion.article
                 key={article.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -163,11 +165,12 @@ const ArticleList = ({ initialArticles, category, limit = 10 }: ArticleListProps
                 className="glass-card overflow-hidden hover:scale-105 transition-transform duration-300"
               >
                 {/* Featured Image */}
-                <div className="h-48 bg-gradient-to-br from-elektora-blue/30 to-elektora-cyan/30 relative overflow-hidden">
-                  {article.featured_image ? (
-                    <img
+                <div className="h-48 bg-gradient-to-br from-elektora-blue/30 to-elektora-cyan/30 relative overflow-hidden">                  {article.featured_image ? (
+                    <Image
                       src={article.featured_image}
                       alt={article.title}
+                      width={400}
+                      height={192}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -279,7 +282,7 @@ const ArticleList = ({ initialArticles, category, limit = 10 }: ArticleListProps
       )}
 
       {/* No Articles Found */}
-      {!loading && articles && articles.data.length === 0 && (
+      {!loading && articles && articles.articles.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 dark:text-gray-400 text-lg">
             No articles found. Try adjusting your search or filter criteria.

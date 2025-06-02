@@ -1,5 +1,5 @@
 export interface Article {
-  id?: number;
+  id: string;
   title: string;
   slug: string;
   excerpt?: string;
@@ -9,8 +9,8 @@ export interface Article {
   category: string;
   tags?: string;
   published: boolean;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ArticleCreateData {
@@ -26,7 +26,7 @@ export interface ArticleCreateData {
 }
 
 export interface ArticleUpdateData extends Partial<ArticleCreateData> {
-  id: number;
+  id: string;
 }
 
 export interface ArticleFilters {
@@ -37,12 +37,18 @@ export interface ArticleFilters {
   limit?: number;
   offset?: number;
   page?: number;
+  sort?: string;
+  order?: 'asc' | 'desc';
 }
 
 export interface PaginatedArticles {
   articles: Article[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
 }

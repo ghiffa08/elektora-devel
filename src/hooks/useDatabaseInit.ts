@@ -37,8 +37,7 @@ export const useDatabaseInit = () => {
           loading: false,
           error: data.error || 'Failed to check database status',
         });
-      }
-    } catch (error) {
+      }    } catch {
       setStatus({
         initialized: false,
         loading: false,
@@ -68,8 +67,7 @@ export const useDatabaseInit = () => {
           loading: false,
           error: data.error || 'Failed to initialize database',
         });
-      }
-    } catch (error) {
+      }    } catch {
       setStatus({
         initialized: false,
         loading: false,
@@ -77,9 +75,9 @@ export const useDatabaseInit = () => {
       });
     }
   };
-
   useEffect(() => {
     checkDatabase();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

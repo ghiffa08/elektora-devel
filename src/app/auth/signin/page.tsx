@@ -5,8 +5,18 @@ import { useEffect, useState } from "react"
 import { FaGoogle, FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa"
 import { useRouter } from "next/navigation"
 
+interface Provider {
+  id: string;
+  name: string;
+  type: string;
+}
+
+interface Providers {
+  [key: string]: Provider;
+}
+
 export default function SignInPage() {
-  const [providers, setProviders] = useState<any>(null)
+  const [providers, setProviders] = useState<Providers | null>(null)
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
@@ -71,8 +81,7 @@ export default function SignInPage() {
         } else {
           setError(data.error || "Registration failed")
         }
-      }
-    } catch (error) {
+      }    } catch {
       setError("An error occurred. Please try again.")
     }
 
@@ -228,13 +237,11 @@ export default function SignInPage() {
               </span>
             </div>
           </div>
-        </div>
-
-        {/* OAuth Providers */}
+        </div>        {/* OAuth Providers */}
         <div className="mt-6 space-y-3">
           {Object.values(providers)
-            .filter((provider: any) => provider.id !== "credentials")
-            .map((provider: any) => (
+            .filter((provider: Provider) => provider.id !== "credentials")
+            .map((provider: Provider) => (
             <div key={provider.name}>
               <button
                 onClick={() => signIn(provider.id, { callbackUrl: "/" })}

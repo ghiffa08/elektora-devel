@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { initDatabase, getDatabase } from '@/lib/database';
 
 // POST /api/init-db - Initialize database tables
@@ -26,10 +26,9 @@ export async function POST() {
 export async function GET() {
   try {
     // Try to get the database connection (will throw if not initialized)
-    let connection;
-    try {
+    let connection;    try {
       connection = getDatabase();
-    } catch (error) {
+    } catch {
       return NextResponse.json({
         success: true,
         initialized: false,
