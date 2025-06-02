@@ -2,6 +2,9 @@ import { Suspense } from 'react';
 import { ArticleService } from '@/services/articleService';
 import ArticlesPageClient from '@/components/articles/ArticlesPageClient';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 // Loading component for SSR
 function ArticlesLoading() {
   return (
@@ -12,19 +15,29 @@ function ArticlesLoading() {
 }
 
 export default async function ArticlesPage() {
-  // Fetch initial data server-side
-  const articleService = new ArticleService();
-  const initialData = await articleService.getArticles({ 
-    published: true,
-    page: 1,
-    limit: 12
-  });
+  try {
+    // Fetch initial data server-side
+    const articleService = new ArticleService();
+    const initialData = await articleService.getArticles({ 
+      published: true,
+      page: 1,
+      limit: 12
+    });
 
-  return (
-    <Suspense fallback={<ArticlesLoading />}>
-      <ArticlesPageClient initialArticles={initialData} />
-    </Suspense>
-  );
+    return (
+      <Suspense fallback={<ArticlesLoading />}>
+        <ArticlesPageClient initialArticles={initialData} />
+      </Suspense>
+    );
+  } catch (error) {
+    console.error('Error loading articles during build:', error);
+    // Return client-side only version for build environments
+    return (
+      <Suspense fallback={<ArticlesLoading />}>
+        <ArticlesPageClient initialArticles={{ articles: [], total: 0 }} />
+      </Suspense>
+    );
+  }
 }
 
 export const metadata = {

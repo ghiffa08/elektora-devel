@@ -1,3 +1,15 @@
+const { execSync } = require('child_process');
+
+// Force Prisma generation on build
+if (process.env.NODE_ENV === 'production') {
+  try {
+    execSync('npx prisma generate', { stdio: 'inherit' });
+    console.log('✅ Prisma Client generated successfully');
+  } catch (error) {
+    console.error('❌ Failed to generate Prisma Client:', error);
+  }
+}
+
 const nextConfig = {
   reactStrictMode: true,
   typescript: {

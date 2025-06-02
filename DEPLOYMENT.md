@@ -12,8 +12,8 @@
 Add these environment variables in your Vercel project settings:
 
 ```env
-# Database Configuration
-DATABASE_URL="your-production-database-url"
+# Database Configuration (PostgreSQL Required for Production)
+DATABASE_URL="postgresql://username:password@host:port/database_name"
 
 # NextAuth.js Configuration  
 NEXTAUTH_URL="https://your-domain.vercel.app"
@@ -24,12 +24,31 @@ GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
 ```
 
+### Database Setup (Required)
+
+**Important**: SQLite is not supported in Vercel's serverless environment. You must use a PostgreSQL database for production deployment.
+
+#### Quick Setup with Vercel Postgres
+1. Go to your Vercel project dashboard
+2. Navigate to "Storage" tab
+3. Create a new "Postgres" database
+4. Copy the connection string to `DATABASE_URL` environment variable
+
+#### Alternative: Neon (Free PostgreSQL)
+1. Visit [neon.tech](https://neon.tech) and create a free account
+2. Create a new database
+3. Copy the connection string to `DATABASE_URL` environment variable
+
 ### Build Configuration
 
-The project is configured with automatic Prisma Client generation:
+The project uses different database providers for development vs production:
 
-- **Build Command**: `prisma generate && next build`
-- **Install Command**: `npm install && npx prisma generate`
+- **Development**: SQLite (`prisma/schema.prisma`)
+- **Production**: PostgreSQL (`prisma/schema.production.prisma`)
+
+Build commands:
+- **Local Build**: `npm run build` (uses SQLite)
+- **Vercel Build**: `npm run build:vercel` (switches to PostgreSQL and builds)
 - **Dev Command**: `npm run dev`
 
 ### Deployment Steps
@@ -64,40 +83,44 @@ The project is configured with automatic Prisma Client generation:
 - Use a strong `NEXTAUTH_SECRET` in production
 
 #### Database Issues
-- For production, use a cloud database (PlanetScale, Railway, etc.)
-- Update `DATABASE_URL` to point to production database
-- Run migrations on production database if needed
+- **Critical**: Use PostgreSQL for production (SQLite not supported on Vercel)
+- Set up Vercel Postgres or external PostgreSQL database
+- Update `DATABASE_URL` to PostgreSQL connection string
+- Run `npx prisma db push` to create tables in production database
 
 ### Database Options for Production
 
-#### Option 1: PlanetScale (Recommended)
+#### Option 1: Vercel Postgres (Recommended for Vercel)
 ```env
-DATABASE_URL="mysql://username:password@host/database?sslaccept=strict"
+DATABASE_URL="postgres://default:xxx@xxx.postgres.vercel-storage.com:5432/verceldb"
 ```
 
-#### Option 2: Railway
+#### Option 2: Neon (Free Tier Available)
+```env
+DATABASE_URL="postgresql://username:password@ep-xxx.us-east-2.aws.neon.tech/database"
+```
+
+#### Option 3: Railway
 ```env
 DATABASE_URL="postgresql://username:password@host:port/database"
 ```
 
-#### Option 3: Vercel Postgres
-```env
-DATABASE_URL="postgres://username:password@host:port/database"
-```
-
 ### Post-Deployment
 
-1. **Test Authentication**
+1. **Setup Database Schema**
+   - Run `npx prisma db push` to create tables in production database
+   - Or visit `/api/init-db` to create tables via API
+
+2. **Test Authentication**
    - Visit `/auth/signin`
    - Test Google OAuth flow
    - Verify user registration
 
-2. **Initialize Database**
-   - Visit `/api/init-db` to create tables
+3. **Initialize Sample Data**
    - Visit `/api/seed-admin` to create admin user
    - Visit `/api/seed-articles` to add sample articles
 
-3. **Test Article Features**
+4. **Test Article Features**
    - Create new article
    - Edit existing article
    - Test article management
