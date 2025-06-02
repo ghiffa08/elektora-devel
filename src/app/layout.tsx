@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import AuthProvider from "@/components/auth/AuthProvider";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,13 +37,35 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${inter.variable} ${dmSans.variable} antialiased font-inter`}
       >
-        <ThemeProvider>
-          <LanguageProvider>
-            <LoadingScreen>
-              {children}
-            </LoadingScreen>
-          </LanguageProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <LanguageProvider>
+              <LoadingScreen>
+                {children}
+              </LoadingScreen>
+              <Toaster 
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                  },
+                  success: {
+                    style: {
+                      background: '#10b981',
+                    },
+                  },
+                  error: {
+                    style: {
+                      background: '#ef4444',
+                    },
+                  },
+                }}
+              />
+            </LanguageProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -12,15 +12,16 @@ interface LanguageContextType {
 
 // Translation dictionaries
 const translations: Record<Language, Record<string, string>> = {
-  en: {
-    // Header
+  en: {    // Header
     "home": "Home",
     "about": "About",
     "divisions": "Divisions",
-    "software": "Software",
-    "hardware": "Hardware",
+    "software": "Software",    "hardware": "Hardware",
     "activities": "Activities",
+    "articles": "Articles",
     "projects": "Projects",
+    "profile": "Profile",
+    "admin": "Admin",
     "join": "Join Now",
     
     // Hero
@@ -72,15 +73,17 @@ const translations: Record<Language, Record<string, string>> = {
     "copyright": "© 2025 Elektora Team. All rights reserved.",
     "footerDescription": "Empowering the next generation of tech innovators through collaborative learning and community-driven projects."
   },
-  id: {
-    // Header
+  id: {    // Header
     "home": "Beranda",
     "about": "Tentang",
     "divisions": "Divisi",
     "software": "Perangkat Lunak",
     "hardware": "Perangkat Keras",
     "activities": "Aktivitas",
+    "articles": "Artikel",
     "projects": "Proyek",
+    "profile": "Profil",
+    "admin": "Admin",
     "join": "Gabung Sekarang",
     
     // Hero
