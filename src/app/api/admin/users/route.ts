@@ -14,6 +14,7 @@ interface SessionWithUser {
   user: UserSession;
 }
 
+
 export async function POST(request: NextRequest) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
