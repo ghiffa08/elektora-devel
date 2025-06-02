@@ -38,6 +38,7 @@ export default function CreateArticlePage() {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSuccess = (article: any) => {
     setShowSuccess(true);
     setTimeout(() => {

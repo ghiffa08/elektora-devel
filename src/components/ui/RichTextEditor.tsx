@@ -12,11 +12,9 @@ import {
   FaQuoteLeft, 
   FaCode,
   FaLink,
-  FaImage,
-  FaEye,
+  FaImage,  FaEye,
   FaEdit
 } from 'react-icons/fa';
-import { useLanguage } from '@/context/LanguageContext';
 
 interface RichTextEditorProps {
   value: string;
@@ -33,7 +31,6 @@ const RichTextEditor = ({
   className = "",
   minHeight = 400 
 }: RichTextEditorProps) => {
-  const { t } = useLanguage();
   const [isPreview, setIsPreview] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 

@@ -2,20 +2,23 @@
 
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { FaImage, FaEye, FaCode, FaTags, FaSave, FaSpinner } from 'react-icons/fa';
+import Image from 'next/image';
+import { FaImage, FaEye, FaTags, FaSave, FaSpinner } from 'react-icons/fa';
 import { MdPreview, MdEdit } from 'react-icons/md';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { ArticleCreateData } from '@/types/article';
 
 interface ArticleCreateProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess?: (article: any) => void;
   onCancel?: () => void;
   isEditing?: boolean;
 }
 
-const ArticleCreate = ({ initialData, onSuccess, onCancel, isEditing = false }: ArticleCreateProps) => {
+const ArticleCreate = ({ initialData, onSuccess, onCancel }: ArticleCreateProps) => {
   const { t } = useLanguage();
   const { user } = useAuth();
   
@@ -129,8 +132,7 @@ const ArticleCreate = ({ initialData, onSuccess, onCancel, isEditing = false }: 
         onSuccess?.(result.data);
       } else {
         setErrors({ general: result.error || t(isEditing ? 'failedUpdateArticle' : 'failedCreateArticle') });
-      }
-    } catch (error) {
+      }    } catch {
       setErrors({ general: t('networkError') });
     } finally {
       setIsLoading(false);
@@ -140,11 +142,12 @@ const ArticleCreate = ({ initialData, onSuccess, onCancel, isEditing = false }: 
   const renderPreview = () => (
     <div className="prose prose-lg max-w-none dark:prose-invert">
       <h1 className="text-3xl font-bold mb-4">{formData.title || 'Untitled Article'}</h1>
-      
-      {imagePreview && (
-        <img 
+        {imagePreview && (
+        <Image 
           src={imagePreview} 
           alt="Featured" 
+          width={800}
+          height={256}
           className="w-full h-64 object-cover rounded-lg mb-6"
         />
       )}
@@ -274,11 +277,12 @@ const ArticleCreate = ({ initialData, onSuccess, onCancel, isEditing = false }: 
                   accept="image/*"
                   onChange={handleImageUpload}
                   className="hidden"
-                />
-                {imagePreview && (
-                  <img 
+                />                {imagePreview && (
+                  <Image 
                     src={imagePreview} 
                     alt="Preview" 
+                    width={48}
+                    height={48}
                     className="h-12 w-12 object-cover rounded"
                   />
                 )}

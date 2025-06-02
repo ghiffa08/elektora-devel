@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { ArticleService } from '@/services/articleService';
 import ArticlesPageClient from '@/components/articles/ArticlesPageClient';
-import { Article } from '@/types/article';
 
 // Loading component for SSR
 function ArticlesLoading() {

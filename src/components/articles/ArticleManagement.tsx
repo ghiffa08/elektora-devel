@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaEdit, FaTrash, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
-import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { Article } from '@/types/article';
 
@@ -12,18 +11,12 @@ interface ArticleManagementProps {
 }
 
 const ArticleManagement = ({ onEdit }: ArticleManagementProps) => {
-  const { t } = useLanguage();
   const { user } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');  const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    fetchArticles();
-  }, [filter]);
-
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -47,7 +40,11 @@ const ArticleManagement = ({ onEdit }: ArticleManagementProps) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, user?.name]);
+
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
 
   const handleTogglePublish = async (articleId: string, currentStatus: boolean) => {
     try {
